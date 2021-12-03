@@ -4,7 +4,7 @@
  */
 fun pow(base: Int, exp: Int): Int {
     var res = 1
-    for (i in 0 .. exp) {
+    for (i in 1 .. exp) {
         res *= base
     }
     return res

@@ -33,7 +33,7 @@ fun determineGammaAndEpsilonRate(input: List<String>): Pair<Int,Int> {
         multiplier *= 2
     }
 
-    val mask = pow(2, bitsPerInput - 1) - 1
+    val mask = pow(2, bitsPerInput) - 1
     val epsilonRate = gammaRate xor mask
 
     return Pair(gammaRate, epsilonRate)
