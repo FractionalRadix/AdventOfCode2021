@@ -27,9 +27,9 @@ fun findWinningBoard(draws: List<Int>, boards: List<BingoBoard>) {
             break
     }
 
-    println("Sum of winning board = $sumOfWinningBoard")
-    println("Last draw= $lastDraw")
-    println("Sum of winning board times last draw = ${sumOfWinningBoard * lastDraw}")
+    //println("Sum of winning board = $sumOfWinningBoard")
+    //println("Last draw= $lastDraw")
+    println("Sum of winning board times last draw: ${sumOfWinningBoard * lastDraw}")
 }
 
 fun findLoosingBoard(draws: List<Int>, val_boards: MutableList<BingoBoard>) {
@@ -54,8 +54,8 @@ fun findLoosingBoard(draws: List<Int>, val_boards: MutableList<BingoBoard>) {
         }
     }
 
-    println("Sum of loosing board: $sumOfLoosingBoard")
-    println("Last draw: $lastDraw")
+    //println("Sum of loosing board: $sumOfLoosingBoard")
+    //println("Last draw: $lastDraw")
     println("Sum of loosing board times last draw: ${sumOfLoosingBoard * lastDraw}")
 }
 

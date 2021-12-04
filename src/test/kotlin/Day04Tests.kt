@@ -38,12 +38,12 @@ class Day04Tests {
     fun testWinningBoard() {
         var sumOfWinningBoard = 0
         for (draw in draws) {
-            println("DRAW: $draw")
+            //println("DRAW: $draw")
             for (board in boards) {
                 board.draw(draw)
                 if (board.hasColumnOfNulls() || board.hasRowOfNulls()) {
-                    board.print()
-                    print(board.sum())
+                    //board.print()
+                    //print(board.sum())
                     sumOfWinningBoard = board.sum()
                     break
                 }
@@ -58,13 +58,9 @@ class Day04Tests {
     @Test
     fun testLoosingBoard() {
         var sumOfLoosingBoard = 0
-        var lastDraw = 0
         for (draw in draws) {
-            lastDraw = draw
             for (board in boards) {
                 board.draw(draw)
-                println("DRAW: $draw")
-                board.print()
             }
             // Filter out the boards that won this round, unless there is only one board remaining.
             if (boards.size > 1) {
