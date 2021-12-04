@@ -4,34 +4,21 @@ import kotlin.io.path.readLines
 fun solveDay04() {
     val inputList = Path("""inputFiles\AoCDay04.txt""").readLines()
 
-    findWinningboard()
-
     val draws = inputList[0].split(',').map { it.toInt() }
-    var boards = parseBoards(inputList.drop(2))
+    val boards = parseBoards(inputList.drop(2))
 
+    findWinningBoard(draws, boards)
     findLoosingBoard(draws, boards)
 }
 
-fun findWinningboard() {
-    val inputList = Path("""inputFiles\AoCDay04.txt""").readLines()
-
-    val draws = inputList[0].split(',').map { it.toInt() }
-    var boards = parseBoards(inputList.drop(2))
-
-    for (board in boards) {
-        board.print()
-    }
-
+fun findWinningBoard(draws: List<Int>, boards: List<BingoBoard>) {
     var sumOfWinningBoard = 0
     var lastDraw = 0
     for (draw in draws) {
-        println("DRAW: $draw")
         lastDraw = draw
         for (board in boards) {
             board.draw(draw)
             if (board.hasColumnOfNulls() || board.hasRowOfNulls()) {
-                board.print()
-                print(board.sum())
                 sumOfWinningBoard = board.sum()
                 break
             }
@@ -46,7 +33,6 @@ fun findWinningboard() {
 }
 
 fun findLoosingBoard(draws: List<Int>, val_boards: MutableList<BingoBoard>) {
-
     var boards = val_boards
     var sumOfLoosingBoard = 0
     var lastDraw = 0
@@ -54,8 +40,6 @@ fun findLoosingBoard(draws: List<Int>, val_boards: MutableList<BingoBoard>) {
         lastDraw = draw
         for (board in boards) {
             board.draw(draw)
-            println("DRAW: $draw")
-            //board.print()
         }
         // Filter out the boards that won this round, unless there is only one board remaining.
         if (boards.size > 1) {
@@ -76,10 +60,10 @@ fun findLoosingBoard(draws: List<Int>, val_boards: MutableList<BingoBoard>) {
 }
 
 fun parseBoards(inputList: List<String>): MutableList<BingoBoard> {
-    var boards = mutableListOf<BingoBoard>()
+    val boards = mutableListOf<BingoBoard>()
     var current = BingoBoard()
 
-    var counter = 0;
+    var counter = 0
     for (row in inputList.filter { it != "" }) {
         current.addRow(row)
         counter++
@@ -94,7 +78,7 @@ fun parseBoards(inputList: List<String>): MutableList<BingoBoard> {
 }
 
 class BingoBoard {
-    var rows = mutableListOf(mutableListOf<Int?>())
+    private var rows = mutableListOf(mutableListOf<Int?>())
 
     fun addRow(row: String) {
         val values = row
@@ -129,8 +113,8 @@ class BingoBoard {
         return false
     }
 
-    fun getColumn(colIdx: Int): List<Int?> {
-        var column = mutableListOf<Int?>()
+    private fun getColumn(colIdx: Int): List<Int?> {
+        val column = mutableListOf<Int?>()
         for (row in rows) {
             column.add(row[colIdx])
         }
@@ -152,8 +136,8 @@ class BingoBoard {
         var s = 0
         rows.forEach {
             s += it
-                .filter { element -> element != null }
-                .sumOf { number -> number!! }
+                .filterNotNull()
+                .sum()
         }
         return s
     }
