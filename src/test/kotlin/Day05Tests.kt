@@ -4,11 +4,11 @@ import java.util.*
 import kotlin.test.assertEquals
 
 class Day05Tests {
-    private lateinit var input: List<String>
+    private lateinit var lineSegments: List<LineSegment>
 
     @Before
     fun init( ) {
-        input = listOf(
+        val input = listOf(
         "0,9 -> 5,9",
         "8,0 -> 0,8",
         "9,4 -> 3,4",
@@ -18,35 +18,27 @@ class Day05Tests {
         "0,9 -> 2,9",
         "3,4 -> 1,4",
         "0,0 -> 8,8",
-        "5,5 -> 8,2")
-    }
+        "5,5 -> 8,2"
+        )
 
+        lineSegments = parseInputDay05(input)
+    }
 
     @Test
     fun testParser( ) {
-        val parsedInput = parseInput(input)
         val thirdLineSegment = LineSegment(9,4,3,4)
-        assertEquals(thirdLineSegment, parsedInput[2])
+        assertEquals(thirdLineSegment, lineSegments[2])
     }
 
     @Test
     fun testOverlaps1() {
-        val parsedInput = parseInput(input)
-        val field = fillField1(parsedInput)
-
-        field.print()
-
+        val field = fillField1(lineSegments)
         assertEquals(5, field.countOverlaps())
     }
 
     @Test
     fun testOverlaps2() {
-        val parsedInput = parseInput(input)
-        val field = fillField2(parsedInput)
-
-        field.print()
-
+        val field = fillField2(lineSegments)
         assertEquals(12, field.countOverlaps())
-
     }
 }

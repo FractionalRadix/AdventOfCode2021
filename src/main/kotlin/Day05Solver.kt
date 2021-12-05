@@ -1,17 +1,17 @@
 import java.lang.Integer.*
 import java.lang.Math.abs
+import kotlin.math.sign
 import kotlin.io.path.Path
 import kotlin.io.path.readLines
-import kotlin.math.sign
 
 fun solveDay05() {
     val inputList = Path("""inputFiles\AoCDay05.txt""").readLines()
 
-    val lineSegments = parseInput(inputList)
+    val lineSegments = parseInputDay05(inputList)
     val field = fillField1(lineSegments)
-    println(field.countOverlaps())
+    println("Overlaps in horizontal and vertical lines: ${field.countOverlaps()}")
     val field2 = fillField2(lineSegments)
-    println(field2.countOverlaps())
+    println("Overlaps in horizontal, vertical, and diagonal lines: ${field2.countOverlaps()}")
 
     /*
     5280
@@ -39,16 +39,6 @@ fun fillField1(lineSegments: List<LineSegment>) : Field {
     return field
 }
 
-fun sign(input:Int): Int {
-    return if (input == 0) {
-        0
-    } else if (input > 0) {
-        1
-    } else {
-        -1
-    }
-}
-
 fun fillField2(lineSegments: List<LineSegment>) : Field {
     val field = Field()
     for (line in lineSegments) {
@@ -56,8 +46,8 @@ fun fillField2(lineSegments: List<LineSegment>) : Field {
         val ylen = abs(line.y1 - line.y2)
         val len = max(xlen, ylen)
         for (i in 0 .. len) {
-            val dx = sign(line.x2 - line.x1)
-            val dy = sign(line.y2 - line.y1)
+            val dx = (line.x2 - line.x1).sign
+            val dy = (line.y2 - line.y1).sign
             field.add(line.x1 + i * dx, line.y1 + i * dy)
         }
     }
@@ -97,7 +87,7 @@ class Field {
     }
 }
 
-fun parseInput(input: List<String>) : List<LineSegment> {
+fun parseInputDay05(input: List<String>) : List<LineSegment> {
     val result = mutableListOf<LineSegment>()
     for (line in input) {
         val split = line.split("->")
