@@ -1,5 +1,6 @@
 import kotlin.io.path.Path
 import kotlin.io.path.readLines
+import kotlin.math.abs
 
 fun solveDay07() {
     val inputList = Path("""inputFiles\AoCDay07.txt""").readLines()
@@ -19,7 +20,7 @@ fun solvePuzzle1(input: List<Int>): Int {
 
     val costs = mutableListOf<Int>()
     for (i in min .. max) {
-        val cost = input.map { Math.abs(it - i) }.sum()
+        val cost = input.map { abs(it - i) }.sum()
         costs.add(cost)
     }
     return costs.minOrNull()!!
