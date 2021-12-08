@@ -24,12 +24,12 @@ class Day07Tests {
     }
 
     @Test
-    fun testPuzzle1() {
-        Assert.assertEquals(37, solvePuzzle1(parsedInput))
+    fun testDetermineFuelConsumption1() {
+        Assert.assertEquals(37, determineFuelConsumption1(parsedInput))
     }
 
     @Test
-    fun testPuzzle2() {
-        Assert.assertEquals(168, solvePuzzle2(parsedInput))
+    fun testDetermineFuelConsumption2() {
+        Assert.assertEquals(168, determineFuelConsumption2(parsedInput))
     }
 }

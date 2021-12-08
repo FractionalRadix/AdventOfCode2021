@@ -5,7 +5,8 @@ fun main() {
     //solveDay04()
     //solveDay05()
     //solveDay06()
-    solveDay07()
+    //solveDay07()
+    solveDay08()
 }
 
 
