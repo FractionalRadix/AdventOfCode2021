@@ -1,28 +1,30 @@
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import java.awt.Point
 
 class Day09Tests {
-    private lateinit var inputLines: List<String>
+    private lateinit var depthMap: Map<Point, Int>
 
     @Before
     fun init() {
-        inputLines = listOf(
+        val inputLines = listOf(
             "2199943210",
             "3987894921",
             "9856789892",
             "8767896789",
             "9899965678",
         )
+        depthMap = parseDepthMap(inputLines)
     }
 
     @Test
     fun testRiskLevel() {
-        Assert.assertEquals(15, summedRiskLevel(inputLines))
+        Assert.assertEquals(15, summedRiskLevel(depthMap))
     }
 
     @Test
-    fun testMultipliedBasins() {
-        Assert.assertEquals(1134, multipliedBasins(inputLines))
+    fun testMultipliedBasinSizes() {
+        Assert.assertEquals(1134, multipliedBasinSizes(depthMap))
     }
 }
