@@ -22,20 +22,12 @@ class Day08Tests {
     }
 
     @Test
-    fun testParse() {
-    //    assertContentEquals(
-    //        listOf(),
-    //        parsedInput
-    //    )
-    }
-
-    @Test
-    fun testPuzzle1() {
+    fun testCountDigitsWithUniqueSegmentCount() {
         Assert.assertEquals(26, countDigitsWithUniqueSegmentCount(parsedInput))
     }
 
     @Test
-    fun testPuzzle2() {
+    fun testSummedSevenSegmentOutput() {
         Assert.assertEquals(61229, summedSevenSegmentOutput(parsedInput))
     }
 }

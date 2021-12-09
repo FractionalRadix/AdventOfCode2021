@@ -9,7 +9,7 @@ fun solveDay09() {
     val inputList = Path("""inputFiles\AoCDay09.txt""").readLines()
     val depthMap = parseDepthMap(inputList)
 
-    println("The summed risk level is ${summedRiskLevel(depthMap)}")   // 541.
+    println("Summed risk level: ${summedRiskLevel(depthMap)}")   // 541.
     println("Product of the sizes of the three largest basins: ${multipliedBasinSizes(depthMap)}") // 847504.
 }
 
