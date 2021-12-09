@@ -1,7 +1,6 @@
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
-import kotlin.test.assertContentEquals
 
 class Day08Tests {
     private lateinit var parsedInput: List<SignalLine>
@@ -32,11 +31,11 @@ class Day08Tests {
 
     @Test
     fun testPuzzle1() {
-        Assert.assertEquals(26, solvePuzzle1(parsedInput))
+        Assert.assertEquals(26, countDigitsWithUniqueSegmentCount(parsedInput))
     }
 
     @Test
     fun testPuzzle2() {
-        Assert.assertEquals(61229, solvePuzzle2(parsedInput))
+        Assert.assertEquals(61229, summedSevenSegmentOutput(parsedInput))
     }
 }
