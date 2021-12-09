@@ -4,7 +4,7 @@ import kotlin.io.path.readLines
 fun solveDay09() {
     val inputList = Path("""inputFiles\AoCDay09.txt""").readLines()
 
-    //println("The summed risk level is ${summedRiskLevel(inputList)}")   // 1581 is too high. It's 541.
+    println("The summed risk level is ${summedRiskLevel(inputList)}")   // 1581 is too high. It's 541.
     //TODO!+
     multipliedBasins(inputList)
 }
@@ -15,32 +15,43 @@ fun multipliedBasins(inputLines: List<String>): Long {
     val depthMap = parseDepthMap(inputLines)
     val lowPoints = findLowPoints(depthMap)
 
+    val basinSizes = mutableListOf<Int>()
+
     lowPoints.forEach { println("(${it.first},${it.second})==${depthMap[Pair(it.first,it.second)]}")}
 
     //TODO!+ Now that we have the low points, find the basins surrounding them.
     // For every point, find the surrounding points - if they're higher but NOT 9, they are part of the basin.
     // Then do the same for all points around those...
     for (lowPoint in lowPoints) {
-        val basin = determineBasin(depthMap, lowPoint.first, lowPoint.second)
+        val basin = determineBasin(depthMap, setOf(Pair(lowPoint.first, lowPoint.second)))
         println("Basin for (${lowPoint.first}, ${lowPoint.second}):")
         for (point in basin) {
             print("(${point.first},${point.second}) ")
         }
+        basinSizes.add(basin.size)
     }
 
-    return 0 //TODO!~
+    val m1 = basinSizes.maxOrNull()
+    basinSizes.remove(m1)
+    val m2 = basinSizes.maxOrNull()
+    basinSizes.remove(m2)
+    val m3 = basinSizes.maxOrNull()
+
+    val biggestThree = m1!!.toLong() * m2!!.toLong() * m3!!.toLong()
+    println("$m1 * $m2 * $m3 == ${biggestThree}")
+
+    return biggestThree
 }
 
-fun determineBasin(depthMap: Map<Pair<Int,Int>,Int>, x: Int, y:Int): Set<Pair<Int,Int>> {
-    var basin = mutableSetOf(Pair(x,y))
+fun determineBasin(depthMap: Map<Pair<Int,Int>,Int>, points: Set<Pair<Int,Int>>): Set<Pair<Int,Int>> {
+    var basin = mutableSetOf<Pair<Int,Int>>()
 
-    do {
-        var newPoints = mutableListOf<Pair<Int,Int>>()
-        for (point in basin) {
-            newPoints.addAll(higherSurroundingPoints(depthMap, point.first, point.second))
-        }
-        basin.addAll(newPoints)
-    } while (newPoints.size > 0)
+    for (point in points) {
+        basin.add(point)
+        val neighbours = higherSurroundingPoints(depthMap, point.first, point.second).toSet()
+        val restOfBasin = determineBasin(depthMap, neighbours)
+        basin.addAll(restOfBasin)
+    }
 
     return basin
 }
