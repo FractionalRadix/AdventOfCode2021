@@ -9,8 +9,9 @@ fun main() {
     solveDay07()
     solveDay08()
     solveDay09()
-    */
     solveDay10()
+    */
+    solveDay11()
 }
 
 
