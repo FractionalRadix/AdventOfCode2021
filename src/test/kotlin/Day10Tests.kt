@@ -32,7 +32,7 @@ class Day10Tests {
     }
 
     @Test
-    fun testSolvePuzzle2() {
+    fun testMiddleScoreForIncompleteLines() {
         assertEquals(288957, middleScoreForIncompleteLines(inputLines))
     }
 }

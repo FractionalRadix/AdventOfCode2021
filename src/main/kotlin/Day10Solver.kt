@@ -11,9 +11,8 @@ fun solveDay10() {
     println("Middle score for incomplete lines: ${middleScoreForIncompleteLines(inputList)}") // 3049320156.
 }
 
-
 fun scoreForIllegalLines(inputList: List<String>): Int {
-    return inputList.map { validity(it) }.sum()
+    return inputList.sumOf { validity(it) }
 }
 
 fun middleScoreForIncompleteLines(inputList: List<String>): Long {
@@ -22,52 +21,42 @@ fun middleScoreForIncompleteLines(inputList: List<String>): Long {
         .map { completionScore(it) }
         .sorted()
 
-    //scores.map { println(it) }
-
     val middleIndex = (scores.size - 1) / 2
     return scores[middleIndex]
 }
 
 fun completionScore(line: String): Long {
+    val scores = mapOf('(' to 1, '[' to 2, '{' to 3, '<' to 4)
+    val openingCharacters = scores.keys
+
     val stack = mutableListOf<Char>()
-    for (i in 0 until line.length) {
-        val ch = line[i]
-        if (ch == '{' || ch == '[' || ch == '<' || ch == '(') {
-            stack.add(ch)
+    for (char in line) {
+        if (char in openingCharacters) {
+            stack.add(char)
         } else {
             // Illegal lines have already been filtered by the caller.
             stack.removeLast()
         }
     }
 
-    var totalScore: Long = 0
-    for (i in stack.size - 1 downTo 0) {
-        totalScore *= 5
-        when (stack[i]) {
-            '(' -> totalScore += 1
-            '[' -> totalScore += 2
-            '{' -> totalScore += 3
-            '<' -> totalScore += 4
-        }
-    }
-
-    return totalScore
+    return stack
+        .map { scores[it] }
+        .foldRight(0) { cur, acc -> (5 * acc) + cur!! }
 }
 
 fun validity(line: String) : Int {
     val stack = mutableListOf<Char>()
-    for (i in 0 until line.length) {
-        val ch = line[i]
-        if (ch == '{' || ch == '[' || ch == '<' || ch == '(') {
-            stack.add(ch)
+    for (char in line) {
+        if (char == '{' || char == '[' || char == '<' || char == '(') {
+            stack.add(char)
         } else {
-            if (ch == '}' && stack.last() != '{')
+            if (char == '}' && stack.last() != '{')
                 return 1197
-            if (ch == ')' && stack.last() != '(')
+            if (char == ')' && stack.last() != '(')
                 return 3
-            if (ch == ']' && stack.last() != '[')
+            if (char == ']' && stack.last() != '[')
                 return 57
-            if (ch == '>' && stack.last() != '<')
+            if (char == '>' && stack.last() != '<')
                 return 25137
             stack.removeLast()
         }
