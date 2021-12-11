@@ -64,22 +64,8 @@ fun step(grid: MutableMap<Point, Int>): Long {
 }
 
 fun increaseNeighbours(grid: MutableMap<Point, Int>, position: Point) {
-    getNeighbours(grid, position).forEach { grid[it] = grid[it]!! + 1 }
-}
-
-fun getNeighbours(grid: MutableMap<Point, Int>, position: Point): List<Point> {
-    val neighbours = mutableListOf<Point>()
-    for (dx in -1 .. +1) {
-        for (dy in -1 .. +1) {
-            if (dx != 0 || dy != 0) {
-                val neighbour = Point(position.x + dx, position.y + dy)
-                if (grid[neighbour] != null) {
-                    neighbours.add(neighbour)
-                }
-            }
-        }
-    }
-    return neighbours
+    //getNeighbours(grid, position).forEach { grid[it] = grid[it]!! + 1 }
+    getAllNeighbours(grid, position).forEach { grid[it] = grid[it]!! + 1 }
 }
 
 fun firstSynchronizedFlash(grid: MutableMap<Point, Int>): Long {

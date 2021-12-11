@@ -35,21 +35,6 @@ class Day11Tests {
     }
 
     @Test
-    fun testNeighbours() {
-        parsedInput = parseInputDay11(inputLines)
-        val neighbours = getNeighbours(parsedInput, Point(5,5))
-        assertEquals(8, neighbours.size)
-        assertContains(neighbours, Point(4,4))
-        assertContains(neighbours, Point(4,5))
-        assertContains(neighbours, Point(4,6))
-        assertContains(neighbours, Point(5,4))
-        assertContains(neighbours, Point(5,6))
-        assertContains(neighbours, Point(6,4))
-        assertContains(neighbours, Point(6,5))
-        assertContains(neighbours, Point(6,6))
-    }
-
-    @Test
     fun testCountFlashes() {
         assertEquals(1656, countFlashes(parsedInput))
     }
