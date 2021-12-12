@@ -49,7 +49,10 @@ fun step(grid: MutableMap<Point, Int>): Long {
     // First, increase every position by 1.
     grid.keys.forEach { grid[it] = grid[it]!! + 1 }
 
-    // Second, if any octopus reaches 10, increase its neighbours.
+    // Second, if any octopus reaches 10, increase the energy level of its neighbours.
+    // And if that causes more octopuses to reach 10, increase the energy level of their neighbours, too.
+    // And if THAT causes more octopuses to reach 10, increase the energy level of THEIR neighbours...
+    // ...And so on, until no more octopuses reach 10 in this step.
     val flashers = mutableSetOf<Point>()
     do {
         val newFlashers = grid.keys.filter { grid[it]!! > 9 }.toMutableSet() - flashers
