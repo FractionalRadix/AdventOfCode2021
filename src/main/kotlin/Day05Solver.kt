@@ -9,14 +9,9 @@ fun solveDay05() {
 
     val lineSegments = parseInputDay05(inputList)
     val field = fillField1(lineSegments)
-    println("Overlaps in horizontal and vertical lines: ${field.countOverlaps()}")
+    println("Overlaps in horizontal and vertical lines: ${field.countOverlaps()}")  // 5280.
     val field2 = fillField2(lineSegments)
-    println("Overlaps in horizontal, vertical, and diagonal lines: ${field2.countOverlaps()}")
-
-    /*
-    5280
-    16716
-     */
+    println("Overlaps in horizontal, vertical, and diagonal lines: ${field2.countOverlaps()}")  // 16716.
 }
 
 fun fillField1(lineSegments: List<LineSegment>) : Field {

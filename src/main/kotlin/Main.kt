@@ -1,5 +1,4 @@
 fun main() {
-    /*
     solveDay01()
     solveDay02()
     solveDay03()
@@ -11,7 +10,6 @@ fun main() {
     solveDay09()
     solveDay10()
     solveDay11()
-    */
     solveDay12()
 }
 
