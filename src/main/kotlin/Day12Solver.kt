@@ -70,16 +70,12 @@ class Path(private val nodes: MutableList<String>) {
     }
 
     fun hasSmallCaveBeenVisitedTwice(): Boolean {
-        val smallCaves = nodes
+        return nodes
             .filter { caveName -> caveName.isLowerCase() }  // Look only at the small caves.
-
-        for (cave in smallCaves) {
-            if (smallCaves.count { it == cave } >= 2) {
-                return true
-            }
-        }
-
-        return false
+            .groupingBy { it }                              // Group them by name.
+            .eachCount()                                    // For every group, see how big it is (how often this name occurs).
+            .values                                         // Select the group sizes; we're not interested in the names themselves, only in how often they occur.
+            .any { it >= 2 }                                // Check if any of them occurs more than once. If so, return true; otherwise, return false.
     }
 }
 
