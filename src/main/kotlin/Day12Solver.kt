@@ -45,13 +45,29 @@ fun generalizedDepthFirstSearch(
     return sum
 }
 
+/**
+ * A path through a number of named locations.
+ */
 class Path(private val nodes: MutableList<String>) {
+    /**
+     * Add a location name to the end of the path.
+     * @param node Name of the location.
+     */
     fun add(node: String) {
         nodes.add(node)
     }
 
+    /**
+     * Check if the path contains the given location (case-sensitive).
+     * @param node Name of the location.
+     * @return <code>true</code> if and only if the path contains the named location.
+     */
     fun contains(node: String) = nodes.contains(node)
 
+    /**
+     * Make a deep copy of the path.
+     * @return A new path instance, that is an exact copy of the original.
+     */
     fun copy(): Path {
         val copy = Path(mutableListOf())
         for(node in nodes) {
@@ -60,15 +76,22 @@ class Path(private val nodes: MutableList<String>) {
         return copy
     }
 
+    /**
+     * Last location in the path.
+     */
     fun lastNode() = nodes.last()
 
     /**
-     * Tell us how often the given cave has already been visited in this path.
+     * Tell us how often the given location has already been visited in this path.
      */
     fun countVisits(cave: String): Int {
         return nodes.count { it == cave }
     }
 
+    /**
+     * Determine if any location, whose name is all lowercase, has been visited twice or more.
+     * @return <code>true</code> if and only if the path contains a location, whose name is all lowercase, that is visited more than once.
+     */
     fun hasSmallCaveBeenVisitedTwice(): Boolean {
         return nodes
             .filter { caveName -> caveName.isLowerCase() }  // Look only at the small caves.
