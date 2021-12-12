@@ -56,14 +56,6 @@ class Day12Tests {
         assertEquals(103, countPathsWithSmallCavesAtMostTwice(caves))
     }
 
-
-    @Test
-    fun testIsStringLowerCase() {
-        assertEquals(true, "abc".isLowerCase())
-        // assertEquals(true, "ab2c".isLowerCase())
-        assertEquals(false, "abDE".isLowerCase())
-    }
-
     @Test
     fun testFollowingCaves1() {
         val caves = parseInputDay12(inputLines1)

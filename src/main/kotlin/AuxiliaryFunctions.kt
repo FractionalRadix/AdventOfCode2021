@@ -24,11 +24,14 @@ fun sortString(str: String): String {
         set.add(char)
     }
     val list = set.sorted()
-    var res = ""
-    for (char in list) {
-        res += char
+
+    var result = ""
+    for (ch in list) {
+        val repetitions = str.count { it == ch }
+        result += "$ch".repeat(repetitions)
     }
-    return res
+
+    return result
 }
 
 /**
@@ -38,7 +41,7 @@ fun sortString(str: String): String {
  * @param b A string whose contents is strictly characters that can be represented by Char.
  * @return The number of letters that the strings have in common.
  */
-fun howManyLettersInCommon(a: String, b:String): Int {
+fun countLettersInCommon(a: String, b:String): Int {
     val charListA = mutableListOf<Char>()
     for (char in a) {
         charListA.add(char)
@@ -50,6 +53,19 @@ fun howManyLettersInCommon(a: String, b:String): Int {
     }
 
     return charListA.count { charListB.contains(it) }
+}
+
+/**
+ * Determine if all letters in a String are lowercase.
+ * For example, "hello" and "3 days" will both return <code>true</code>.
+ * The second string contains some symbols that aren't letters, but not a single capital letter - so the string is in lowercase.
+ * But "Hello" will return <code>false</code>, because it contains a capital letter.
+ * @return <code>true<code> if and only if all letters in a given string are lowercase.
+ */
+fun String.isLowerCase() : Boolean {
+    return this
+        .filter { ch -> ch.isLetter() }
+        .all { ch -> ch.isLowerCase() }
 }
 
 /**

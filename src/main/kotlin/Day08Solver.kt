@@ -180,7 +180,7 @@ private fun distinguishPatternsFor2and5(
         val candidateSet = mapping[sortString(pattern)]
         if (candidateSet != null) {   // ...and it SHOULD be... but I'm not using !! or .? yet, want to allow for custom error handling.
             if (candidateSet.containsAll(setOf(2, 5))) {
-                val nrOfSegmentsInCommon = howManyLettersInCommon(pattern, patternForFour)
+                val nrOfSegmentsInCommon = countLettersInCommon(pattern, patternForFour)
                 when (nrOfSegmentsInCommon) {
                     2 -> mapping[sortString(pattern)] = setOf(2)
                     3 ->mapping[sortString(pattern)] = setOf(5)
@@ -200,7 +200,7 @@ private fun distinguishPatternsFor0and9(
         val candidateSet = mapping[sortString(pattern)]
         if (candidateSet != null) {   // ...and it SHOULD be... but I'm not using !! or .? yet, want to allow for custom error handling.
             if (candidateSet.containsAll(setOf(0, 9))) {
-                val nrOfSegmentsInCommon = howManyLettersInCommon(pattern, patternForFour)
+                val nrOfSegmentsInCommon = countLettersInCommon(pattern, patternForFour)
                 when (nrOfSegmentsInCommon) {
                     4 -> mapping[sortString(pattern)] = setOf(9)
                     3 -> mapping[sortString(pattern)] = setOf(0)

@@ -18,30 +18,18 @@ fun parseInputDay12(inputLines: List<String>) : List<Pair<String, String>> {
     return connections
 }
 
-fun countPathsWithSmallCavesAtMostOnce(graph: List<Pair<String, String>>) = depthFirstSearch(graph, Path(mutableListOf("start")))
-fun countPathsWithSmallCavesAtMostTwice(graph: List<Pair<String, String>>) = depthFirstSearch2(graph, Path(mutableListOf("start")))
+fun countPathsWithSmallCavesAtMostOnce(graph: List<Pair<String, String>>) =
+    generalizedDepthFirstSearch(graph, Path(mutableListOf("start")), ::followingCaves)
+fun countPathsWithSmallCavesAtMostTwice(graph: List<Pair<String, String>>) =
+    generalizedDepthFirstSearch(graph, Path(mutableListOf("start")), ::followingCaves2)
 
-fun depthFirstSearch(graph: List<Pair<String, String>>, pathSoFar: Path): Long {
-    //pathSoFar.print()
-    val nextCaves = followingCaves(graph, pathSoFar)
 
-    var sum: Long = 0
-    for (cave in nextCaves) {
-        if (cave == "end") {
-            sum++
-        } else {
-            val nextPath = pathSoFar.copy()
-            nextPath.add(cave)
-            sum += depthFirstSearch(graph, nextPath)
-        }
-    }
-
-    return sum
-}
-
-fun depthFirstSearch2(graph: List<Pair<String, String>>, pathSoFar: Path): Long {
-    //pathSoFar.print()
-    val nextCaves = followingCaves2(graph, pathSoFar)
+fun generalizedDepthFirstSearch(
+    graph: List<Pair<String, String>>,
+    pathSoFar: Path,
+    nextAcceptableCaves: (List<Pair<String,String>>, Path) -> List<String>
+): Long {
+    val nextCaves = nextAcceptableCaves(graph, pathSoFar)
 
     var sum: Long = 0
     for (cave in nextCaves) {
@@ -50,13 +38,12 @@ fun depthFirstSearch2(graph: List<Pair<String, String>>, pathSoFar: Path): Long 
         } else {
             val nextPath = pathSoFar.copy()
             nextPath.add(cave)
-            sum += depthFirstSearch2(graph, nextPath)
+            sum += generalizedDepthFirstSearch(graph, nextPath, nextAcceptableCaves)
         }
     }
 
     return sum
 }
-
 
 class Path(private val nodes: MutableList<String>) {
     fun add(node: String) {
@@ -74,10 +61,6 @@ class Path(private val nodes: MutableList<String>) {
     }
 
     fun lastNode() = nodes.last()
-
-    fun print() {
-        println(nodes.joinToString(separator="-"))
-    }
 
     /**
      * Tell us how often the given cave has already been visited in this path.
@@ -100,14 +83,15 @@ class Path(private val nodes: MutableList<String>) {
     }
 }
 
-fun String.isLowerCase() : Boolean {
-    for (ch in this) {
-        if (!ch.isLowerCase())
-            return false
-    }
-    return true
-}
-
+/**
+ * Given a path and a map of a cave system, find the next caves to explore, where small caves are visited at most once.
+ * Each cave has a name. Caves whose names are in lower case are small caves, the rest are large caves.
+ * The cave system has a designated "start" and "end" cave, named "start" and "end" respectively.
+ * The map consists of pairs of cave names; if two cave names occur in a pair, these caves are connected.
+ * @param graph A map of a cave system, represented by pairs of caves: if a pair is present in the map, then those two caves are connected.
+ * @param pathSoFar The path travelled so sar: an ordered list of cave names.
+ * @return The list of caves connected to the last cave in the path, if no small cave must be visited twice.
+ */
 fun followingCaves(graph: List<Pair<String, String>>, pathSoFar: Path) : List<String> {
     val nextAcceptableCaves = mutableListOf<String>()
     val startNode = pathSoFar.lastNode()
@@ -135,8 +119,13 @@ fun followingCaves(graph: List<Pair<String, String>>, pathSoFar: Path) : List<St
 }
 
 /**
- * Given a path and map, find the next caves to explore, where a single small cave is visited at most twice.
- * As soon as you need to visit another single cave twice, or the already-visited small cave is visited a third time, that path is discarded.
+ * Given a path and map of a cave system, find the next caves to explore, where a <em>single</em> small cave is visited <em>at most twice</em>.
+ * Each cave has a name. Caves whose names are in lower case are small caves, the rest are large caves.
+ * The cave system has a designated "start" and "end" cave, named "start" and "end" respectively.
+ * The map consists of pairs of cave names; if two cave names occur in a pair, these caves are connected.
+ * @param graph A map of a cave system, represented by pairs of caves: if a pair is present in the map, then those two caves are connected.
+ * @param pathSoFar The path travelled so sar: an ordered list of cave names.
+ * @return The list of caves connected to the last cave in the path, if <em>one/<em> small cave can be visited twice, but all other small caves at most once.
  */
 fun followingCaves2(graph: List<Pair<String, String>>, pathSoFar: Path) : List<String> {
     val nextAcceptableCaves = mutableListOf<String>()
