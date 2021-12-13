@@ -2,6 +2,7 @@ import org.junit.Test
 import java.awt.Point
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 
 class Day13Tests {
     private val inputLines = listOf(
@@ -46,8 +47,10 @@ class Day13Tests {
     fun testFoldMultiple() {
         val (grid, folds) = parseInputDay13(inputLines)
         val endGrid = foldAll(grid, folds)
+
         display(endGrid)
-        // Not really a unit test... need to add a check on the positions of some '#' characters.
-        //  And also a few checks on where there should NOT be a '#'.
+
+        assertContains(endGrid, Point(1,0))
+        assertFalse(endGrid.contains(Point(1,1)))
     }
 }

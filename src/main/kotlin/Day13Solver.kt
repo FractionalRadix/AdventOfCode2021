@@ -9,8 +9,8 @@ fun solveDay13() {
     println("Number of dots after folding the paper once: ${countDots(foldOnce(grid, folds[0].first, folds[0].second))}") // 942
 
     val fullyFolded = foldAll(grid, folds)
+    println("Code for the thermal imaging camera system:")
     display(fullyFolded)    // JZGUAPRB
-
 }
 
 fun display(grid: Set<Point>) {
@@ -44,18 +44,14 @@ fun foldOnce(grid: Set<Point>, axis: Char, threshold: Int): Set<Point> {
     val nextGrid = mutableSetOf<Point>()
 
     for (point in grid) {
-        if (axis=='x') {
-            if (point.x < threshold) {
-                nextGrid.add(point)
-            } else {
-                nextGrid.add(Point(2 * threshold - point.x, point.y))
+        when (axis) {
+            'x' -> {
+                val nextX = if (point.x < threshold) { point.x } else { 2 * threshold - point.x }
+                nextGrid.add(Point(nextX, point.y))
             }
-        } else if (axis == 'y') {
-            if (point.y < threshold) {
-                nextGrid.add(point)
-            } else {
-                val nextPoint = Point(point.x, 2 * threshold - point.y)
-                nextGrid.add(nextPoint)
+            'y' -> {
+                val nextY = if (point.y < threshold) { point.y } else { 2 * threshold - point.y }
+                nextGrid.add(Point(point.x, nextY))
             }
         }
     }
@@ -71,8 +67,6 @@ fun parseInputDay13(inputLines: List<String>): Pair<Set<Point>, List<Pair<Char, 
     for (line in inputLines) {
         if (line.isNotEmpty()) {
             if (line.startsWith("fold")) {
-                //val modifiedLine = line.drop(11)
-                //val (axis, value) = modifiedLine.split('=')
                 val (axis, value) = line
                     .drop(11)
                     .split('=')
