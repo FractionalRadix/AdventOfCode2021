@@ -31,7 +31,7 @@ class Day13Tests {
     @Test
     fun testParse() {
         val (grid, folds) = parseInputDay13(inputLines)
-        assertEquals(grid[Point(10,4)], '#')
+        assertContains(grid, Point(10,4))
         assertContains(folds, Pair('x',5))
     }
 

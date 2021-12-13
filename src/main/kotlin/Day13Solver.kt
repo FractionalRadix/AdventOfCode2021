@@ -13,27 +13,26 @@ fun solveDay13() {
 
 }
 
-fun display(grid: Map<Point,Char>) {
-    val minX = grid.keys.minOf { it.x }
-    val maxX = grid.keys.maxOf { it.x }
-    val minY = grid.keys.minOf { it.y }
-    val maxY = grid.keys.maxOf { it.y }
+fun display(grid: Set<Point>) {
+    val minX = grid.minOf { it.x }
+    val maxX = grid.maxOf { it.x }
+    val minY = grid.minOf { it.y }
+    val maxY = grid.maxOf { it.y }
 
     println()
     for (y in minY .. maxY) {
         println()
         for (x in minX .. maxX) {
-            val char = grid[Point(x,y)]
-            if (char == null) {
-                print(' ')
-            } else {
+            if (grid.contains(Point(x,y))) {
                 print('#')
+            } else {
+                print(' ')
             }
         }
     }
 }
 
-fun foldAll(grid: Map<Point,Char>, instructions: List<Pair<Char,Int>>): Map<Point,Char> {
+fun foldAll(grid: Set<Point>, instructions: List<Pair<Char,Int>>): Set<Point> {
     var nextGrid = grid
     for (instruction in instructions) {
         nextGrid = foldOnce(nextGrid, instruction.first, instruction.second)
@@ -41,23 +40,22 @@ fun foldAll(grid: Map<Point,Char>, instructions: List<Pair<Char,Int>>): Map<Poin
     return nextGrid
 }
 
-fun foldOnce(grid: Map<Point,Char>, axis: Char, threshold: Int): Map<Point, Char> {
-    val nextGrid = mutableMapOf<Point, Char>()
+fun foldOnce(grid: Set<Point>, axis: Char, threshold: Int): Set<Point> {
+    val nextGrid = mutableSetOf<Point>()
 
-    for (point in grid.keys) {
+    for (point in grid) {
         if (axis=='x') {
             if (point.x < threshold) {
-                nextGrid[point] = grid[point]!!
+                nextGrid.add(point)
             } else {
-                val nextPoint = Point(2 * threshold - point.x, point.y)
-                nextGrid[nextPoint] = '#'
+                nextGrid.add(Point(2 * threshold - point.x, point.y))
             }
         } else if (axis == 'y') {
             if (point.y < threshold) {
-                nextGrid[point] = grid[point]!!
+                nextGrid.add(point)
             } else {
                 val nextPoint = Point(point.x, 2 * threshold - point.y)
-                nextGrid[nextPoint] = '#'
+                nextGrid.add(nextPoint)
             }
         }
     }
@@ -65,22 +63,23 @@ fun foldOnce(grid: Map<Point,Char>, axis: Char, threshold: Int): Map<Point, Char
     return nextGrid
 }
 
-fun countDots(grid: Map<Point, Char>) = grid.values.count { it == '#' }
+fun countDots(grid: Set<Point>) = grid.size
 
-fun parseInputDay13(inputLines: List<String>): Pair<Map<Point,Char>, List<Pair<Char, Int>>> {
-    val grid = mutableMapOf<Point, Char>()
-    val folds = mutableListOf<Pair<Char, Int>>()
+fun parseInputDay13(inputLines: List<String>): Pair<Set<Point>, List<Pair<Char, Int>>> {
+    val grid = mutableSetOf<Point>()
+    val folds = mutableListOf<Pair<Char, Int>>( )
     for (line in inputLines) {
         if (line.isNotEmpty()) {
             if (line.startsWith("fold")) {
-                val modifiedLine = line.drop(11)
-                print(modifiedLine)
-                val (axis, value) = modifiedLine.split('=')
+                //val modifiedLine = line.drop(11)
+                //val (axis, value) = modifiedLine.split('=')
+                val (axis, value) = line
+                    .drop(11)
+                    .split('=')
                 folds.add(Pair(axis[0], value.toInt()))
             } else {
                 val (x, y) = line.split(",")
-                val coordinates = Point(x.toInt(), y.toInt())
-                grid[coordinates] = '#'
+                grid.add(Point(x.toInt(), y.toInt()))
             }
         }
     }
