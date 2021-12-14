@@ -34,7 +34,7 @@ class Day14Tests {
     @Test
     fun testApplyRulesOnce() {
         val (template, rules) = parseInputDay14(inputLines)
-        val result = applyRules(template, rules)
+        val result = applyRewritingRules(template, rules)
         Assert.assertEquals("NCNBCHB", result)
     }
 
@@ -42,7 +42,7 @@ class Day14Tests {
     fun testApplyRulesFourTimes() {
         var (template, rules) = parseInputDay14(inputLines)
         for (i in 1 .. 4) {
-            template = applyRules(template, rules)
+            template = applyRewritingRules(template, rules)
         }
         Assert.assertEquals("NBBNBNBBCCNBCNCCNBBNBBNBBBNBBNBBCBHCBHHNHCBBCBHCB", template)
     }
@@ -51,33 +51,9 @@ class Day14Tests {
     fun testMaxMinusMin() {
         var (template, rules) = parseInputDay14(inputLines)
         for (i in 1 .. 10) {
-            template = applyRules(template, rules)
+            template = applyRewritingRules(template, rules)
         }
         Assert.assertEquals(1588, maxMinusMin(template))
-    }
-
-    @Test
-    fun testApplyRules2Once() {
-        val (template, rules) = parseInputDay14(inputLines)
-
-        val map = template
-            .windowed(2)
-            .groupingBy { it }
-            .eachCount()
-            .castStringMapToLongValues()
-
-        // NNCB -> NCNBCHB
-        // NN, NC, CB -> NC, CN, NB, BC, CH, HB
-        val delta = determineChangeInStringCounts(map, rules)
-        val result = addStringCounts(map, delta)
-        Assert.assertEquals(1L, result["NC"])
-        Assert.assertEquals(1L, result["CN"])
-        Assert.assertEquals(1L, result["NB"])
-        Assert.assertEquals(1L, result["BC"])
-        Assert.assertEquals(1L, result["CH"])
-        Assert.assertEquals(1L, result["HB"])
-
-        Assert.assertEquals(6L, result.values.count { it != 0L }.toLong() )
     }
 
     @Test
