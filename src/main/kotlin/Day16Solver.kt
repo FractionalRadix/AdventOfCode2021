@@ -3,7 +3,6 @@ import kotlin.io.path.readLines
 
 fun solveDay16() {
     val inputList = Path("""inputFiles\AoCDay16.txt""").readLines()
-    val bits = parseInputDay16(inputList)
     println("Sum of version numbers: ${sumVersionNumbers(inputList[0])}")   // 895
     println("Message sent via the BITS protocol: ${evaluatePackets(inputList[0])}") // 1148595959144
 }
@@ -170,13 +169,13 @@ fun List<Long>.product(): Long {
 fun sumVersionNumbers(message: String): Int {
     index = 0
     val packet = process(hexStringToIntList(message))
-    packet.print(3)
+    //packet.print(3)
     return packet.summedVersion()
 }
 
 fun evaluatePackets(message:String): Long {
     index = 0
     val packet = process(hexStringToIntList(message))
-    packet.print(3)
+    //packet.print(3)
     return packet.eval()
 }
