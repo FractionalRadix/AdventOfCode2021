@@ -3,35 +3,160 @@ import kotlin.io.path.readLines
 import kotlin.math.*
 
 fun solveDay17() {
-    val inputList = Path("""inputFiles\AoCDay17.txt""").readLines() //
+    val inputList = Path("""inputFiles\AoCDay17.txt""").readLines()
     var (xStart, xEnd) = getXRange(inputList[0])
     var (yStart, yEnd) = getYRange(inputList[0])
 
-    // First, the highest point of the probe is where its velocity reaches 0 - until that it goes up, after that it goes down.
-    // Hence, given an initial velocity vy0, the highest point is vy0 + (vy0 - 1) + ... + 2 + 1 , or vy0*(vy0+1)/2 .
-    // Let's call this value yMax:  yMax = vy0*(vy0+1)/2
+    println("The highest point that the probe can reach is ${highestPointForProbe(yStart, yEnd)}") // 10296
 
-    // A number of times in this puzzle, we will need to solve 1+2+...+(n-1)+n=p,
-    // We know that 1+2+...+(n-1)+n=n*(n+1)/2.
-    // Hence, we need to solve n*(n+1)/2=p.
-    //   n*(n+1)/2=p <=> n*(n+1)=2*p <=> n*(n+1)-2*p=0 <=> n*n+n-2*p=0
-    // Now we can use the abc formula, where a=1, b=1, c=-2p
+}
+
+/**
+ * Describe a rectangular area.
+ */
+class Area(val xStart: Int, val xEnd: Int, val yStart: Int, val yEnd: Int) {
+    /**
+     * Determine if a given point is inside the area.
+     * @param x X-coordinate of the point.
+     * @param y Y-coordinate of the point.
+     * @return <code>true</code> if and only if (x,y) is inside the area. Being on the border counts as being inside.
+     */
+    fun inside(x: Int, y: Int): Boolean {
+        val xInsideRange = if (xStart <= xEnd) { x in xStart .. xEnd } else { x in xEnd .. xStart }
+        val yInsideRange = if (yStart <= yEnd) { y in yStart .. yEnd } else { y in yEnd .. yStart }
+        return xInsideRange && yInsideRange
+    }
+}
+
+fun highestPointForProbe(yStart: Int, yEnd: Int): Int {
+    // First, let's try some brute force.
+    val speeds = mutableSetOf<Pair<Int, Int>>()
+    for (verticalSpeed in 1..1000) {
+        val maxHeight = verticalSpeed * (verticalSpeed + 1) / 2
+        val distanceToFall = maxHeight - min(yStart, yEnd)
+        val steps = determineNrOfSteps(distanceToFall).toInt() + 1
+        // If we fall from maxHeight, does any of these steps get us in the y range?
+        for (i in 1..steps) {
+            val fallenTo = maxHeight - i * (i + 1) / 2
+            if (fallenTo in yStart..yEnd) {
+                println("Starting with velocity $verticalSpeed, falling from $maxHeight to $fallenTo.")
+                speeds.add(Pair(verticalSpeed, maxHeight))
+            }
+        }
+    }
+    return speeds.maxOf { it.second }
+}
 
 
-    solveProblem1(xStart, xEnd, yStart, yEnd)
+fun countPossibleSpeeds(target: Area): Int {
+
+    val speeds = mutableSetOf<Pair<Int, Int>>()
+
+    // First, determine all possible horizontal speeds, along with the number of steps.
+    val initialHorizontalSpeedsWithSteps = initialHorizontalSpeedsWithSteps(target.xStart, target.xEnd)
+
+    val allowedNumberOfSteps = initialHorizontalSpeedsWithSteps.map { it.second }.toSet()
+    val maxSteps = allowedNumberOfSteps.maxOrNull()!!
+
+    // The lowest possible vertical speed is a negative: the yEnd value, which reaches the bottom of the trench in a single step.
+    // For the highest possible vertical speed, observe that for any positive value, the probe will eventually visit *exactly* height 0 again!
+    // For example, if the initial vertical speed is 5, the probe will move 5+4+3+2+1 steps to reach height 15... and then fall with 1+2+3+4+5.
+    // The speed after this falling is -(initialSpeed+1).
+    // So if the initial speed is the absolute value of yEnd minus 1, then the probe will fall from 0 to yEnd.
+    // This means the highest vertical speed is the absolute value of the deepest point of the trench.. minus 1.
+
+    val lowestInitialVerticalSpeed = min(target.yStart, target.yEnd)
+    val highestInitialVerticalSpeed = abs(target.yEnd)-1
+
+    for (initialVerticalSpeed in lowestInitialVerticalSpeed .. highestInitialVerticalSpeed) {
+        for (initialHorizontalSpeed in initialHorizontalSpeedsWithSteps.map { it.first } ) {
+            var xPos = 0
+            var yPos = 0
+            var xVelocity = initialHorizontalSpeed
+            var yVelocity = initialVerticalSpeed
+            // For the stop condition, we check if the probe has passed yEnd while falling.
+            while (yPos >= target.yEnd || yVelocity >= 0) {
+                xPos += xVelocity
+                yPos += yVelocity
+                if (target.inside(xPos, yPos)) {
+                    speeds.add(Pair(xVelocity, yVelocity))
+                    break;
+                }
+                xVelocity--
+                yVelocity--
+            }
+        }
 
 
-    // Second, we need to find those values for vy0, for which the y-coordinate of the probe will at least once be in the range [yStart..yEnd].
-    // Starting from yMax, the height decreases. Again, the formula is 1 + 2 + .... + n
-    // So the question is which value n has for (yMax - yStart) <= n*(n+1)/2 <= (yMax - yEnd)
-    // So we need to solve n from p=n*(n+1)/2. Where p is known; for p we will fill in (yMax-yStart) and (yMax-yEnd).
-    // First, p=yMax-yStart:
-    //      n*(n+1)/2 = yMax-yStart <=> n*(n+1)/2 = vy0*(vy0+1)/2 - yStart <=> n*(n+1) = vy0*(vy0+1) - 2*yStart
+    }
+
+    println()
+    //initialVerticalSpeeds.forEach { print(" $it")}
+    val printableSpeeds = speeds.chunked(9)
+
+    printableSpeeds.forEach {
+        println()
+        it.forEach { point -> print( " (${point.first},${point.second})") }
+    }
+
+    return speeds.size
+}
 
 
 
+/**
+ * Determine the possible initial horizontal speeds for the probe, as well as the number of steps needed to be in the target area using this speed.
+ * Note that these are NOT the same numbers! You don't have to END in the target area, only to CROSS it.
+ * @param xStart Start of the target area range.
+ * @param xEnd End of the target area range.
+ * @return All initial speed values for which the probe visits the target area, together with the number of steps needed to reach the area.
+ *  This is a list of pairs (speed, steps).
+ */
+fun initialHorizontalSpeedsWithSteps(xStart: Int, xEnd: Int): List<Pair<Int,Int>> {
+    val result = mutableListOf<Pair<Int,Int>>()
 
+    // The target area can be in front of us (requiring positive speed values), or behind us (requiring negative speed values).
+    // However, for the *amount* of possible speeds, it doesn't matter! We can simply use the absolute value.
+    val x0 = if (xStart > 0) xStart else abs(xStart)
+    val x1 = if (xEnd > 0) xEnd else abs(xEnd)
 
+    // The highest possible speed equals xEnd: reaches the end of the ocean trench in 1 step.
+    // Any speed higher than that is too high.
+    for (initialSpeed in 1 .. xEnd) {
+        var distanceTravelled = 0
+        var steps = 0
+        for (speed in initialSpeed downTo 0) {
+            distanceTravelled += speed
+            steps++
+            if (distanceTravelled in x0 .. x1) {
+                result.add(Pair(initialSpeed, steps))
+            }
+        }
+
+    }
+
+    return result
+}
+
+//TODO!~ Determine what to do about rounding..
+/**
+ * Suppose you would add 1, 2, 3 ... n.
+ * This would result in a sum, that is provably equal to n*(n+1).
+ * Now suppose that you know this sum, but not the number of steps taken to reach it.
+ * In other words, given a value "sum", you are asked to solve n in "n*(n+1)/2 = sum"
+ * @param sum A non-negative integer, representing the sum of 1 ... n for some unknown n.
+ * @return The number of consecutive integers you'd have to add, to reach the given sum.
+ */
+fun determineNrOfSteps(sum: Int): Double {
+    // Observe that:
+    // n*(n+1)/2 = sum   <=>   n*(n+1) = 2*sum   <=>   n*n + n - 2*sum = 0
+    // Therefore you can just apply the abc formula:
+    val result = abcFormula(1, 1, -2*sum)
+    // If the value of "sum" was positive there will be two solutions, but only one of them a positive number (0 included).
+    if (result.first != null && result.second != null) {
+        return max(result.first!!, result.second!!)
+    }
+    return 0.0
 }
 
 fun solveProblem1(xStart: Int, xEnd: Int, yStart: Int, yEnd: Int): Int? {
@@ -44,12 +169,12 @@ fun solveProblem1(xStart: Int, xEnd: Int, yStart: Int, yEnd: Int): Int? {
 
     // At this point we have two ranges: vxStart1-vxEnd1 and vxStart2-vxEnd2.
 
-    var horizontalSpeeds = mutableListOf<Int>()
+    val horizontalSpeeds = mutableListOf<Int>()
 
-    var vxStart1int = round(vxStart1!!).toInt()
-    var vxEnd1int = round(vxEnd1!!).toInt()
-    var vxStart2int = round(vxStart2!!).toInt()
-    var vxEnd2int = round(vxEnd2!!).toInt()
+    val vxStart1int = round(vxStart1!!).toInt()
+    val vxEnd1int = round(vxEnd1!!).toInt()
+    val vxStart2int = round(vxStart2!!).toInt()
+    val vxEnd2int = round(vxEnd2!!).toInt()
 
     var lowestStartingSpeed = min(vxStart1int, vxEnd1int)
     var highestStartingSpeed = max(vxStart1int, vxEnd1int)
@@ -122,7 +247,7 @@ fun abcFormula(a: Int, b: Int, c:Int): Pair<Double?,Double?> {
 fun getXRange(inputLine: String): Pair<Int, Int> {
     //val str= "target area: x=20..30, y=-10..-5"
     val (_,ranges) = inputLine.split(":")
-    var (namedXRange, namedYRange)=ranges.split(',')
+    val (namedXRange, _)=ranges.split(',')
     val (_,xRange)=namedXRange.split('=')
     val (x0str, x1str)=xRange.split("..")
     return Pair(x0str.toInt(), x1str.toInt())
@@ -131,7 +256,7 @@ fun getXRange(inputLine: String): Pair<Int, Int> {
 fun getYRange(inputLine: String): Pair<Int, Int> {
     //val str= "target area: x=20..30, y=-10..-5"
     val (_,ranges) = inputLine.split(":")
-    var (namedXRange, namedYRange)=ranges.split(',')
+    val (_, namedYRange)=ranges.split(',')
     val (_,yRange)=namedYRange.split('=')
     val (y0str, y1str)=yRange.split("..")
     return Pair(y0str.toInt(), y1str.toInt())
