@@ -36,18 +36,6 @@ fun solveDay20Part1(inputList: List<String>): Int {
     return image2.values.count { it }
 }
 
-fun getXRange(grid: Map<Point, Boolean>): IntRange {
-    val minX = grid.keys.minOf { it.x }
-    val maxX = grid.keys.maxOf { it.x }
-    return IntRange(minX, maxX)
-}
-
-fun getYRange(grid: Map<Point, Boolean>): IntRange {
-    val minY = grid.keys.minOf { it.y }
-    val maxY = grid.keys.maxOf { it.y }
-    return IntRange(minY, maxY)
-}
-
 fun enhanceImage(image: Map<Point, Boolean>, enhancer: String, interpretNullsAsLightPixels: Boolean): Map<Point, Boolean> {
     val enhancedImage = mutableMapOf<Point, Boolean>()
     val xRange = getXRange(image)
@@ -67,32 +55,6 @@ fun enhanceImage(image: Map<Point, Boolean>, enhancer: String, interpretNullsAsL
     }
 
     return enhancedImage
-}
-
-fun printImage(image: Map<Point, Boolean>, interpretNullsAsLightPixels: Boolean) {
-    val xRange = getXRange(image)
-    val yRange = getYRange(image)
-
-    println()
-    for (y in yRange) {
-        println()
-        for (x in xRange) {
-            val point = Point(x,y)
-            if (image[point] == null) {
-                if (interpretNullsAsLightPixels) {
-                    print('#')
-                } else {
-                    print('.')
-                }
-            } else /* image[point] != null */ {
-                if (image[point]!!) {
-                    print('#')
-                } else {
-                    print('.')
-                }
-            }
-        }
-    }
 }
 
 fun subGridValue(image: Map<Point, Boolean>, x: Int, y: Int, interpretNullsAsLightPixels: Boolean): Int {
