@@ -5,31 +5,34 @@ import kotlin.io.path.readLines
 fun solveDay20() {
     val inputList = Path("""inputFiles\AoCDay20.txt""").readLines()
     println("After applying the enhancement algorithm twice, the number of positive bits is ${solveDay20Part1(inputList)}") // 4873.
-    println("After applying the enhancement algorithm fifty times, the number of positive bits is ${solveDay20Part2(inputList)}") // 16394
+    println("After applying the enhancement algorithm fifty times, the number of positive bits is ${solveDay20Part2(inputList)}") // 16394.
 }
+
+// The catch for this problem is: the image is "infinite".
+// This means that undefined pixels are either '.' or '#'.
+// If the first character in the enhancement string is '.', then a field of 9 '.' (which yields 0) results in a '.'.
+// If the first character in the enhancement string is '#', then a field of 9 '.' (which yields 0) results in a '#'.
+// So... if the first character in the enhancement string is '#', the undefined fields will become '#' as well.
+// Now this results in the undefined fields yielding 511 in the next round, so you need to look at the *last* character of the enhancement string too.
+// And if that last character is '.', then the thing will flip back again!
 
 fun solveDay20Part2(inputList: List<String>): Int {
     var (enhancer, image) = parseInputDay20(inputList)
     for (i in 1..50) {
-        val nullsAreLit = (i % 2) == 0
-        image = enhanceImage(image, enhancer, nullsAreLit)
-        printImage(image, nullsAreLit)
+        // If the image enhancer string has different items for the first and last element, then the value of unidentified dots flips.
+        // Unidentified dots will be '#' after one application, but '.' after the next.
+        val alternation = enhancer[0] == '#' && enhancer[511] == '.'
+        val interpretNullsAsLightPixels = alternation && ((i % 2) == 0)
+        image = enhanceImage(image, enhancer, interpretNullsAsLightPixels)
     }
     return image.values.count { it }
 }
 
 fun solveDay20Part1(inputList: List<String>): Int {
     val (enhancer, image0) = parseInputDay20(inputList)
-
-    printImage(image0, false)
     val image1 = enhanceImage(image0, enhancer, false)
-
-    printImage(image1, true)
-    val image2 = enhanceImage(image1, enhancer, false)
-
-    printImage(image2, false)
-
-    println()
+    val alternation = enhancer[0] == '#' && enhancer[511] == '.'
+    val image2 = enhanceImage(image1, enhancer, alternation)
     return image2.values.count { it }
 }
 
@@ -45,7 +48,7 @@ fun getYRange(grid: Map<Point, Boolean>): IntRange {
     return IntRange(minY, maxY)
 }
 
-fun enhanceImage(image: Map<Point, Boolean>, enhancer: String, nullsAreLit: Boolean): Map<Point, Boolean> {
+fun enhanceImage(image: Map<Point, Boolean>, enhancer: String, interpretNullsAsLightPixels: Boolean): Map<Point, Boolean> {
     val enhancedImage = mutableMapOf<Point, Boolean>()
     val xRange = getXRange(image)
     val yRange = getYRange(image)
@@ -57,7 +60,7 @@ fun enhanceImage(image: Map<Point, Boolean>, enhancer: String, nullsAreLit: Bool
 
     for (x in x0 .. x1) {
         for (y in y0 .. y1) {
-            val value = subGridValue(image, x, y, nullsAreLit)
+            val value = subGridValue(image, x, y, interpretNullsAsLightPixels)
             val newBit = enhancer[value] == '#'
             enhancedImage[Point(x,y)] = newBit
         }
@@ -66,7 +69,7 @@ fun enhanceImage(image: Map<Point, Boolean>, enhancer: String, nullsAreLit: Bool
     return enhancedImage
 }
 
-fun printImage(image: Map<Point, Boolean>, nullsAreLit: Boolean) {
+fun printImage(image: Map<Point, Boolean>, interpretNullsAsLightPixels: Boolean) {
     val xRange = getXRange(image)
     val yRange = getYRange(image)
 
@@ -76,12 +79,12 @@ fun printImage(image: Map<Point, Boolean>, nullsAreLit: Boolean) {
         for (x in xRange) {
             val point = Point(x,y)
             if (image[point] == null) {
-                if (nullsAreLit) {
+                if (interpretNullsAsLightPixels) {
                     print('#')
                 } else {
                     print('.')
                 }
-            } else /* image[point] != null */{
+            } else /* image[point] != null */ {
                 if (image[point]!!) {
                     print('#')
                 } else {
@@ -92,14 +95,14 @@ fun printImage(image: Map<Point, Boolean>, nullsAreLit: Boolean) {
     }
 }
 
-fun subGridValue(image: Map<Point, Boolean>, x: Int, y: Int, nullsAreLit: Boolean): Int {
+fun subGridValue(image: Map<Point, Boolean>, x: Int, y: Int, interpretNullsAsLightPixels: Boolean): Int {
     var bitValue = 1
     var totalValue = 0
     for (dy in +1 downTo -1) {
         for (dx in +1 downTo -1) {
             val originalBit = image[Point(x + dx, y + dy)]
             if (originalBit == null) {
-                if (nullsAreLit) {
+                if (interpretNullsAsLightPixels) {
                     totalValue += bitValue
                 }
             } else { // originalBit != null
