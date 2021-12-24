@@ -1,6 +1,8 @@
 import org.junit.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class Day17Tests {
     private val input="target area: x=20..30, y=-10..-5"
@@ -28,6 +30,23 @@ class Day17Tests {
     fun testHighestPointForProbe() {
         val (y0,y1) = getYRange(input)
         assertEquals(45, highestPointForProbe(y0, y1))
+    }
+
+    @Test
+    fun testAreaInside() {
+        val area = Area(-2,-4,4,6)
+        assertTrue(area.inside(-2, 4))
+        assertTrue(area.inside(-4,6))
+        assertTrue(area.inside(-3, 4))
+        assertFalse(area.inside(-3, 7))
+        assertFalse(area.inside(-5,5))
+
+        val reverseArea = Area(-5,-1, 12, 8)
+        assertTrue(reverseArea.inside(-5,12))
+        assertTrue(reverseArea.inside(-1,8))
+        assertTrue(reverseArea.inside(-3, 10))
+        assertFalse(reverseArea.inside(-3, 20))
+        assertFalse(reverseArea.inside(1, 8))
     }
 
     @Test

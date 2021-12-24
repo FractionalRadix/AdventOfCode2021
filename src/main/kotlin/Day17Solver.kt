@@ -4,8 +4,8 @@ import kotlin.math.*
 
 fun solveDay17() {
     val inputList = Path("""inputFiles\AoCDay17.txt""").readLines()
-    var (xStart, xEnd) = getXRange(inputList[0])
-    var (yStart, yEnd) = getYRange(inputList[0])
+    val (xStart, xEnd) = getXRange(inputList[0])
+    val (yStart, yEnd) = getYRange(inputList[0])
 
     println("The highest point that the probe can reach is ${highestPointForProbe(yStart, yEnd)}") // 10296
 
@@ -56,20 +56,34 @@ fun countPossibleSpeeds(target: Area): Int {
     val initialHorizontalSpeedsWithSteps = initialHorizontalSpeedsWithSteps(target.xStart, target.xEnd)
 
     val allowedNumberOfSteps = initialHorizontalSpeedsWithSteps.map { it.second }.toSet()
-    val maxSteps = allowedNumberOfSteps.maxOrNull()!!
+    //val maxSteps = allowedNumberOfSteps.maxOrNull()!!
 
     // The lowest possible vertical speed is a negative: the yEnd value, which reaches the bottom of the trench in a single step.
     // For the highest possible vertical speed, observe that for any positive value, the probe will eventually visit *exactly* height 0 again!
     // For example, if the initial vertical speed is 5, the probe will move 5+4+3+2+1 steps to reach height 15... and then fall with 1+2+3+4+5.
     // The speed after this falling is -(initialSpeed+1).
     // So if the initial speed is the absolute value of yEnd minus 1, then the probe will fall from 0 to yEnd.
-    // This means the highest vertical speed is the absolute value of the deepest point of the trench.. minus 1.
+    // This means the highest vertical speed is the absolute value of the deepest point of the trench... minus 1.
 
     val lowestInitialVerticalSpeed = min(target.yStart, target.yEnd)
-    val highestInitialVerticalSpeed = abs(target.yEnd)-1
+    val highestInitialVerticalSpeed = abs(min(target.yStart, target.yEnd))-1
+
+    val absoluteValueOfHighestHorizontalSpeed = max(abs(target.xStart), abs(target.xEnd))
+
+    //TODO?~ Add the lower bound while we're at it?
+    val initialHorizontalSpeeds = if (target.xStart > 0) {
+        0 .. absoluteValueOfHighestHorizontalSpeed
+    } else {
+        0 downTo -absoluteValueOfHighestHorizontalSpeed
+    }
+
+    // These two values are what we expected:
+    println("Lowest initial vertical speed: $lowestInitialVerticalSpeed")
+    println("Highest initial vertical speed: $highestInitialVerticalSpeed")
+    println("Initial horizontal speeds: $initialHorizontalSpeeds")
 
     for (initialVerticalSpeed in lowestInitialVerticalSpeed .. highestInitialVerticalSpeed) {
-        for (initialHorizontalSpeed in initialHorizontalSpeedsWithSteps.map { it.first } ) {
+        for (initialHorizontalSpeed in initialHorizontalSpeeds) {
             var xPos = 0
             var yPos = 0
             var xVelocity = initialHorizontalSpeed
@@ -79,10 +93,12 @@ fun countPossibleSpeeds(target: Area): Int {
                 xPos += xVelocity
                 yPos += yVelocity
                 if (target.inside(xPos, yPos)) {
-                    speeds.add(Pair(xVelocity, yVelocity))
-                    break;
+                    speeds.add(Pair(initialHorizontalSpeed, initialVerticalSpeed))
+                    break
                 }
-                xVelocity--
+                if (xVelocity > 0) {
+                    xVelocity--
+                }
                 yVelocity--
             }
         }
@@ -91,13 +107,7 @@ fun countPossibleSpeeds(target: Area): Int {
     }
 
     println()
-    //initialVerticalSpeeds.forEach { print(" $it")}
-    val printableSpeeds = speeds.chunked(9)
-
-    printableSpeeds.forEach {
-        println()
-        it.forEach { point -> print( " (${point.first},${point.second})") }
-    }
+    print(speeds.sortedBy { it -> it.second }.sortedBy { it -> it.first })
 
     return speeds.size
 }
