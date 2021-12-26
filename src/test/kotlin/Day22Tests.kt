@@ -1,6 +1,11 @@
 import org.junit.Test
 import kotlin.test.assertEquals
 
+// Some confusion arises because the input ranges represent FULL cubes.
+// Hence x=10..12 means cubes at x-coordinates 10, 11, and 12.
+// So if we read x="10..12" we really should interpret it as "all cubes starting at x=10 and ending at y=13".
+
+
 class Day22Tests {
     private val inputLinesA = listOf(
         "on x=10..12,y=10..12,z=10..12",
@@ -15,10 +20,14 @@ class Day22Tests {
 
     private val inputLinesC = listOf(
         "on x=10..12,y=10..12,z=10..12",
-        "on x=11..13,y=11..13,z=11..13",
         "off x=9..11,y=9..11,z=9..11",
     )
 
+    private val inputLinesD = listOf(
+        "on x=10..12,y=10..12,z=10..12",
+        "on x=11..13,y=11..13,z=11..13",
+        "off x=9..11,y=9..11,z=9..11",
+    )
 
     private val inputLines1 = listOf(
         "on x=10..12,y=10..12,z=10..12",
@@ -125,27 +134,6 @@ class Day22Tests {
     }
 
     @Test
-    fun testOverlap() {
-        assertEquals(0L, overlapSize(1..3, 5..9))
-        assertEquals(0L, overlapSize(5..9, 1..3))
-        assertEquals(3L, overlapSize(2..8, 6..13))
-        assertEquals(3L, overlapSize(6..13, 2..8))
-        assertEquals(1L, overlapSize(1..3, 3..5))
-        assertEquals(1L, overlapSize(4..6, 3..4))
-    }
-
-    @Test
-    fun testSplitOnOverlap() {
-        assertEquals(setOf(Pair(1L..3L, false), Pair(5L..9L, false)), splitOnOverlap(1L..3L, 5L..9L))
-        assertEquals(setOf(Pair(5L..9L, false), Pair(1L..3L, false)), splitOnOverlap(5L..9L, 1L..3L))
-        assertEquals(setOf(Pair(2L..5L, false), Pair(6L..8L, true), Pair(9L..13L, false)), splitOnOverlap(2L..8L, 6L..13L))
-        assertEquals(setOf(Pair(2L..5L, false), Pair(6L..8L, true), Pair(9L..13L, false)), splitOnOverlap(6L..13L, 2L..8L))
-        assertEquals(setOf(Pair(1L..2L, false), Pair(3L..3L, true), Pair(4L..5L, false)), splitOnOverlap(1L..3L, 3L..5L))
-        assertEquals(setOf(Pair(3L..3L, false), Pair(4L..4L, true), Pair(5L..6L, false)), splitOnOverlap(4L..6L, 3L..4L))
-        assertEquals(setOf(Pair(1L..3L, false), Pair(4L..6L, true), Pair(7L..9L, false)), splitOnOverlap(1L..9L, 4L..6L))
-    }
-
-    @Test
     fun testCountCubesOnInLimitedRange() {
         val instructions1 = parseInputDay22(inputLines1)
         assertEquals(39, cubesOnAfterInstructions1(instructions1))
@@ -168,7 +156,13 @@ class Day22Tests {
     @Test
     fun testCountCubesOnInFullRangeC() {
         val instructionsC = parseInputDay22(inputLinesC)
-        assertEquals(38L, cubesOnAfterInstructions2(instructionsC))
+        assertEquals(46L, cubesOnAfterInstructions2(instructionsC))
+    }
+
+    @Test
+    fun testCountCubesOnInFullRangeD() {
+        val instructionsD = parseInputDay22(inputLinesD)
+        assertEquals(38L, cubesOnAfterInstructions2(instructionsD))
     }
 
     @Test

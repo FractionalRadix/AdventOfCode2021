@@ -79,94 +79,19 @@ fun cubesOnAfterInstructions1(instructions: List<Instruction>): Long {
     return cubes.size.toLong()
 }
 
-/**
- * Given two ranges, split them in 2 or 3 separate ranges.
- * If the ranges have no overlap, the output equals the input.
- * If the ranges do have overlap, the output will be: first range minus overlap, overlap, second range minus overlap.
- * This is returned as a list with boolean flags: if the boolean is <code>true</code>, then that range was the overlap.
- * It is assumed that both ranges are in ascending order.
- * @param r0 A range.
- * @param r1 A range.
- * @return A list of ranges with flags. The flag indicates if that range was the overlap.
- *  If there is no overlap, this will simply be the input ranges, both marked with <code>false</code>.
- *  If there was overlap, this will be the: range r0 minus the overlap (marked <code>false</code>), the overlap (marked <code>true</code>), and the range r1 minus the overlap (marked <code>false</code>).
- */
-fun splitOnOverlap(r0: LongRange, r1: LongRange): Set<Pair<LongRange, Boolean>> {
-    val overlapFirst = max(r0.first, r1.first)
-    val overlapLast = min(r0.last, r1.last)
-    if (overlapFirst > overlapLast) {
-        return setOf(
-            Pair(r0, false),
-            Pair(r1, false)
-        )
-    } else {
-        val rStart = min(r0.first, r1.first)
-        val rLast = max(r0.last, r1.last)
-        return setOf(
-            Pair(rStart .. overlapFirst - 1, false),
-            Pair(overlapFirst .. overlapLast, true),
-            Pair(overlapLast + 1 .. rLast, false)
-        )
-    }
-}
-
-/**
- * Given a range, return the ascending version of the same range.
- * For example, "7..4" will return "4..7".
- * When given an already ascending version of the range, simply return the input.
- * For example, "2..3" will return "2..3".
- * @return The ascending version of the range.
- */
-fun LongRange.makeAscending(): LongRange {
-    return if (this.first < this.last)
-        this
-    else
-        this.last..this.first
-}
-
-fun IntRange.toLongRange(): LongRange= LongRange(this.first.toLong(), this.last.toLong())
-
-/**
- * Determine if this range fully contains another range.
- * This includes the case where the range is on the border, or if the ranges are equal.
- * So, (3,5) is fully inside (3,8); as are (3,8) and (5,8).
- * But (2,4) is NOT fully inside (3,8), the point 2 falls outside it.
- * @param other A range.
- * @return <code>true</code> if and only if the given range is fully within this range.
- */
-fun LongRange.fullyContains(other: LongRange): Boolean {
-    val myRange = this.makeAscending()
-    val otherRange = other.makeAscending()
-    return ( (otherRange.first >= myRange.first) && (otherRange.last <= myRange.last) )
-}
-
-/**
- * Determine the size of the overlap between two ranges.
- * Both ranges are in ascending order.
- */
-fun overlapSize(r0: IntRange, r1: IntRange): Long {
-    // Any overlap starts at the largest starting value, and ends at the smallest ending value.
-    val rStart = max(r0.first, r1.first)
-    val rLast = min(r0.last, r1.last)
-    if (rLast < rStart)
-        return 0L
-    return (rLast - rStart + 1).toLong()
-}
-
-/**
- * Determine the size of the overlap of cuboids (x0,y0,z0) and (x1,y1,z1).
- */
-fun overlapSize(x0: IntRange, y0: IntRange, z0: IntRange,
-                x1: IntRange, y1: IntRange, z1: IntRange): Long {
-    return overlapSize(x0,x1) * overlapSize(y0, y1) * overlapSize(z0,z1)
-}
-
 fun cubesOnAfterInstructions2(instructions: List<Instruction>): Long {
     var allLightedCuboids = mutableSetOf<Cuboid>()
 
     for (instruction in instructions) {
 
-        val newCuboid = Cuboid(instruction.xRange.toLongRange(), instruction.yRange.toLongRange(), instruction.zRange.toLongRange())
+        // Handle an off-by-1 problem.
+        // Instructions tell you which cubes are lit; they are inclusive ranges. "x=5..8" means cubes at 5,6,7, and 8.
+        // But mathematics tells you that's the cuboid starting at coordinate 5... and ending at coordinate 9.
+        val xRange = instruction.xRange.first.toLong() .. instruction.xRange.last.toLong() + 1
+        val yRange = instruction.yRange.first.toLong() .. instruction.yRange.last.toLong() + 1
+        val zRange = instruction.zRange.first.toLong() .. instruction.zRange.last.toLong() + 1
+        val newCuboid = Cuboid(xRange, yRange, zRange)
+
         val nextSet = mutableSetOf<Cuboid>()
 
         // 1. Determine if this new cuboid overlaps with any existing cuboids.
@@ -206,7 +131,6 @@ fun cubesOnAfterInstructions2(instructions: List<Instruction>): Long {
                 val addUs = splitCuboids.filter { !newCuboid.fullyContains(it) }
                 nextSet.addAll( addUs )
             }
-
         }
 
         allLightedCuboids = nextSet

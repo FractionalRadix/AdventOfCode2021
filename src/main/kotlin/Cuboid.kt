@@ -1,7 +1,5 @@
 import kotlin.math.abs
 
-//TODO!+ Add functions for makeAscending and splitOnOverlap
-
 data class Cuboid(val xRange: LongRange, val yRange: LongRange, val zRange: LongRange) {
     /**
      * Given another cuboid, determine where these two cuboids overlap - if anywhere.
@@ -57,9 +55,9 @@ data class Cuboid(val xRange: LongRange, val yRange: LongRange, val zRange: Long
     }
 
     fun volume(): Long {
-        val xLength = abs(xRange.last - xRange.first) + 1
-        val yLength = abs(yRange.last - yRange.first) + 1
-        val zLength = abs(zRange.last - zRange.first) + 1
+        val xLength = abs(xRange.last - xRange.first)
+        val yLength = abs(yRange.last - yRange.first)
+        val zLength = abs(zRange.last - zRange.first)
         return xLength * yLength * zLength
     }
 }

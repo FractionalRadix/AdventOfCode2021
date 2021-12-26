@@ -24,7 +24,7 @@ data class Rectangle(val xRange: LongRange, val yRange: LongRange) {
 
                 val newRectangle = Rectangle(xRange.first, yRange.first)
                 val insideA = this.fullyContains(newRectangle)
-                val insideB = this.fullyContains(newRectangle)
+                val insideB = other.fullyContains(newRectangle)
                 if (insideA || insideB) {
                     val overlap = insideA && insideB
                     result.add(Pair(newRectangle, overlap))
@@ -47,8 +47,8 @@ data class Rectangle(val xRange: LongRange, val yRange: LongRange) {
     }
 
     fun surface(): Long {
-        val xL = abs(xRange.last - xRange.first) + 1
-        val yL = abs(yRange.last - yRange.first) + 1
+        val xL = abs(xRange.last - xRange.first)
+        val yL = abs(yRange.last - yRange.first)
         return xL * yL
     }
 }
