@@ -16,7 +16,9 @@ fun main() {
     solveDay14()
     solveDay15()
     solveDay16()
+    */
     solveDay17()
+    /*
     solveDay18()
     solveDay19()
     solveDay20()
@@ -24,8 +26,8 @@ fun main() {
     solveDay22()
     solveDay23()
     solveDay24()
-     */
     solveDay25()
+    */
 }
 
 

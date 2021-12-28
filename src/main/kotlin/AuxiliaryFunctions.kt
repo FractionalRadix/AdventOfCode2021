@@ -1,5 +1,6 @@
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.sqrt
 
 /**
  * Power function for integers.
@@ -11,6 +12,27 @@ fun pow(base: Int, exp: Int): Int {
         res *= base
     }
     return res
+}
+
+/**
+ * Solve a quadratic equation using the abc-formula.
+ * @param a The number of times x is squared in the equation.
+ * @param b The number by which x is multiplied in the equation.
+ * @param c The constant in the equation.
+ * @return A Pair of nullable values; each value in the pair represents a single solution.
+ *  If both values are <code>null</code>, there is no solution.
+ *  If one value is <code>null</code>, there is only one solution - found in the part that isn't <code>null</code>.
+ *  If neither value is <code>null</code>, there are two solutions - although it is possible both may have the same value, meaning only one solution.
+ */
+fun abcFormula(a: Int, b: Int, c:Int): Pair<Double?,Double?> {
+    val discriminant = b*b - 4*a*c
+    if (discriminant < 0) {
+        return Pair(null,null)
+    } else {
+        val x1 = (-b + sqrt(discriminant.toDouble())) / 2*a
+        val x2 = (-b - sqrt(discriminant.toDouble())) / 2*a
+        return Pair(x1,x2)
+    }
 }
 
 /**
